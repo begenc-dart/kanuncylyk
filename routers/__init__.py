@@ -1,0 +1,5 @@
+from routers.namalar_routers import namalar_router
+from routers.permanlar_router import permanlar_router
+from routers.dictinory_routers import dictinory_router
+from routers.kodeks_routers import kodeks_routers
+from routers.information_routers import informations_routers
