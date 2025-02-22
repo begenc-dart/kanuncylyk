@@ -14,3 +14,4 @@ uvicorn==0.25.0
 sqlalchemy==2.0.25
 python-jose[cryptography]
 passlib[bcrypt]
+PyMuPDF

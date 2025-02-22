@@ -2,32 +2,38 @@ import os
 import uuid
 import shutil
 from fastapi import UploadFile
+import fitz
 
-def upload_image(directory: str, file: UploadFile):
+# Function to save and extract text
+def save_and_extract_pdf(directory: str, file: UploadFile):
     try:
-        # Construct upload folder path
+        # Define upload path
         base_path = os.getcwd()
         upload_folder = os.path.join(base_path, "uploads", directory)
+        os.makedirs(upload_folder, exist_ok=True)  # Ensure directory exists
 
-        # Ensure the directory exists
-        os.makedirs(upload_folder, exist_ok=True)
-        print(f"Upload folder created at: {upload_folder}")
-
-        # Create unique filename
+        # Generate unique filename
         extension = file.filename.split(".")[-1]
         unique_id = str(uuid.uuid4())
         new_name = f"{unique_id}.{extension}"
-
-        # Save the file
         file_path = os.path.join(upload_folder, new_name)
+
+        # Save file
         with open(file_path, "wb") as file_object:
             shutil.copyfileobj(file.file, file_object)
 
-        # Return relative path for database storage
-        return f"/uploads/{directory}/{new_name}"
+        # Extract text from PDF
+        text = ""
+        with fitz.open(file_path) as pdf_document:
+            for page in pdf_document:
+                text += page.get_text("text")  # Extract text from each page
+
+        return {"file_path": f"/uploads/{directory}/{new_name}", "text": text}
+
     except Exception as e:
-        print(f"Error during file upload: {e}")
-        return False
+        return {"error": str(e)}
+
+
 def delete_uploaded_image(image_path: str):
     try:
         full_path = os.path.join(os.getcwd(), image_path)

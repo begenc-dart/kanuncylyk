@@ -39,6 +39,8 @@ class Permanlar(Base):
     namalar_id = Column(Integer, ForeignKey('namalar.id', ondelete='CASCADE'))
     pdf = Column(String)
     pdf_rus = Column(String)
+    pdf_tm_text = Column(String)
+    pdf_ru_text = Column(String)
     doc = Column(String)
     doc_rus = Column(String)
     is_active = Column(Boolean,default=False)

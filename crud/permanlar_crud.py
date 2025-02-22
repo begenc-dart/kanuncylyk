@@ -5,7 +5,7 @@ from sqlalchemy import and_, or_, desc, asc, func
 import models as mod
 from returns import Returns
 import upload_depends
-
+import fitz
 
 async def create_perman(req: mod.PermanlarShema, db: Session):
     if (req.title_tm == "" and req.month == "" and req.number == "" and req.title_ru == ""):
@@ -28,7 +28,31 @@ async def create_perman(req: mod.PermanlarShema, db: Session):
         return None
 
 
-async def read_permanlar(namalar_id: int, db: Session, active: bool = None, year: int = None, month: str = None, search: str = None):
+async def read_all_permanlar( db: Session, active: bool = None,  skip: int = 0, limit: int = 10,year: int = None, month: str = None, search: str = None):
+    query = db.query(mod.Permanlar)
+    if year is not None:
+        query = query.filter(mod.Permanlar.year == year)
+    if active is not None:
+        query = query.filter(mod.Permanlar.is_active == active)
+    if month is not None:
+        query = query.filter(mod.Permanlar.month == month)
+    if search:
+
+        query = query.filter(
+            or_(
+                mod.Permanlar.title_tm.ilike(f"%{search}%"),
+                mod.Permanlar.title_ru.ilike(f"%{search}%"),
+                mod.Permanlar.pdf_tm_text.ilike(f"%{search}%"),
+                mod.Permanlar.pdf_ru_text.ilike(f"%{search}%"),
+            )
+        )
+    perman = query.offset(skip).limit(limit).all()
+   
+    if perman:
+        return perman
+    else:
+        return []
+async def read_permanlar(namalar_id: int, db: Session, active: bool = None,  skip: int = 0, limit: int = 10,year: int = None, month: str = None, search: str = None):
     query = db.query(mod.Permanlar).filter(
         mod.Permanlar.namalar_id == namalar_id)
     if year is not None:
@@ -43,9 +67,11 @@ async def read_permanlar(namalar_id: int, db: Session, active: bool = None, year
             or_(
                 mod.Permanlar.title_tm.ilike(f"%{search}%"),
                 mod.Permanlar.title_ru.ilike(f"%{search}%"),
+                mod.Permanlar.pdf_tm_text.ilike(f"%{search}%"),
+                mod.Permanlar.pdf_ru_text.ilike(f"%{search}%"),
             )
         )
-    perman = query.all()
+    perman = query.offset(skip).limit(limit).all()
     if perman:
         return perman
     else:
@@ -62,11 +88,15 @@ async def read_one(id: int, db: Session):
 
 
 async def update_pdf(id, file, file_rus, link: str, link_rus: str, db: Session):
-    pdf = upload_depends.upload_image(directory=link, file=file)
-    pdf_rus = upload_depends.upload_image(directory=link, file=file_rus)
+    
+    pdf = upload_depends.save_and_extract_pdf(directory=link, file=file)
+    pdf_rus = upload_depends.save_and_extract_pdf(directory=link, file=file_rus)
+
     req_json = jsonable_encoder({
-        link: pdf,
-        link_rus: pdf_rus,
+        'pdf_tm_text' : pdf['text'],
+        "pdf_ru_text" : pdf_rus['text'],
+        link: pdf['file_path'],
+        link_rus: pdf_rus['file_path'],
     })
     new_update = (
         db.query(mod.Permanlar)

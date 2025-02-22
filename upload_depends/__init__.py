@@ -1,1 +1,1 @@
-from upload_depends.upload import upload_image, delete_uploaded_image
+from upload_depends.upload import save_and_extract_pdf, delete_uploaded_image
