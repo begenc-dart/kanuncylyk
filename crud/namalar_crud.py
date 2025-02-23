@@ -20,15 +20,15 @@ async def create_namalar(req: mod.NamalarShema, db: Session):
         return new_add
     else:
         return None
-async def read_namalar(db: Session,id:int=None):
+async def read_namalar(db: Session,id:int=None,  skip: int = 0, limit: int = 10):
     kodeks = db.query(mod.Namalar)
     if id:
         kodeks = kodeks.filter(mod.Namalar.kodeks_id==id)
-    kanunlar=kodeks.all()
+    kanunlar=kodeks.offset(skip).limit(limit).all()
     if kanunlar:
         return kanunlar
     else:
-        return None
+        return []
 # update admin
 async def update_namalar(id, req: mod.NamalarShema, db: Session):
     namalar = (

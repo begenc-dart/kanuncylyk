@@ -41,12 +41,12 @@ async def delete_dict(id: int, db: Session = Depends(get_db)):
     else:
         return HTTPException(status_code=status.HTTP_204_NO_CONTENT, detail='Не удалено!')
 @dictinory_router.get('/api/get-dictinary', )
-async def get_dict(search : str= None,db: Session = Depends(get_db)):
+async def get_dict(search : str= None,db: Session = Depends(get_db),  skip: int = 0, limit: int = 10):
     if search:
         # Ensure the string is decoded in case it's not properly decoded
         search = search.encode('utf-8').decode('utf-8')
         
-    result = await crud.read_dict(db=db,search=search)
+    result = await crud.read_dict(db=db,search=search,skip=skip,limit=limit)
     result = jsonable_encoder(result)
     if result:
         return JSONResponse(content=result, status_code=status.HTTP_200_OK)

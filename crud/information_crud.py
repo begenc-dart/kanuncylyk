@@ -25,8 +25,8 @@ async def create_information(req: mod.DictinoryShemas, db: Session):
         return None
 
 
-async def read_information(db: Session):
-    user = db.query(mod.Informations).all()
+async def read_information(db: Session,  skip: int = 0, limit: int = 10):
+    user = db.query(mod.Informations).offset(skip).limit(limit).all()
     if user:
         return user
     else:

@@ -28,33 +28,12 @@ async def create_perman(req: mod.PermanlarShema, db: Session):
         return None
 
 
-async def read_all_permanlar( db: Session, active: bool = None,  skip: int = 0, limit: int = 10,year: int = None, month: str = None, search: str = None):
+async def read_permanlar( db: Session,namalar_id: int = None , active: bool = None,  skip: int = 0, limit: int = 10,year: int = None, month: str = None, search: str = None):
     query = db.query(mod.Permanlar)
-    if year is not None:
-        query = query.filter(mod.Permanlar.year == year)
-    if active is not None:
-        query = query.filter(mod.Permanlar.is_active == active)
-    if month is not None:
-        query = query.filter(mod.Permanlar.month == month)
-    if search:
-
-        query = query.filter(
-            or_(
-                mod.Permanlar.title_tm.ilike(f"%{search}%"),
-                mod.Permanlar.title_ru.ilike(f"%{search}%"),
-                mod.Permanlar.pdf_tm_text.ilike(f"%{search}%"),
-                mod.Permanlar.pdf_ru_text.ilike(f"%{search}%"),
-            )
-        )
-    perman = query.offset(skip).limit(limit).all()
-   
-    if perman:
-        return perman
-    else:
-        return []
-async def read_permanlar(namalar_id: int, db: Session, active: bool = None,  skip: int = 0, limit: int = 10,year: int = None, month: str = None, search: str = None):
-    query = db.query(mod.Permanlar).filter(
-        mod.Permanlar.namalar_id == namalar_id)
+    
+    if namalar_id is not None :
+        # print(namalar_id)
+        query= query.filter(mod.Permanlar.namalar_id == namalar_id)
     if year is not None:
         query = query.filter(mod.Permanlar.year == year)
     if active is not None:

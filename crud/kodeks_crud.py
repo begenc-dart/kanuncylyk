@@ -21,12 +21,12 @@ async def create_kodeks(req: mod.KodeksShema, db: Session):
         return new_add
     else:
         return None
-async def read_kodeks(db: Session):
-    user = db.query(mod.Kodeks).all()
+async def read_kodeks(db: Session,  skip: int = 0, limit: int = 10,):
+    user = db.query(mod.Kodeks).offset(skip).limit(limit).all()
     if user:
         return user
     else:
-        return None
+        return []
 # update admin
 async def update_kodeks(id, req: mod.KodeksShema, db: Session):
     namalar = (

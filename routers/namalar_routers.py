@@ -26,11 +26,11 @@ async def create_namalar(req: mod.NamalarShema, db: Session = Depends(get_db)):
 #      Namalar get     #
 ########################
 @namalar_router.get('/api/get-namalar', )
-async def get_namalar(db: Session = Depends(get_db),id:int=None):
-    result = await crud.read_namalar(db=db,id=id)
+async def get_namalar(db: Session = Depends(get_db),id:int=None,  skip: int = 0, limit: int = 10):
+    result = await crud.read_namalar(db=db,id=id,skip=skip,limit=limit)
     print(result)
     result = jsonable_encoder(result)
-    if result:
+    if result or len(result) ==0:
         return JSONResponse(content=result, status_code=status.HTTP_200_OK)
     else:
         return JSONResponse(content={"status":"some error"}, status_code=status.HTTP_204_NO_CONTENT)

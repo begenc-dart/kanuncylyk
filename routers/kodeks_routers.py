@@ -26,11 +26,11 @@ async def create_kodeks(req: mod.KodeksShema, db: Session = Depends(get_db)):
 #      Namalar get     #
 ########################
 @kodeks_routers.get('/api/get-kodeks', )
-async def get_namalar(db: Session = Depends(get_db),):
-    result = await crud.read_kodeks(db=db)
+async def get_namalar(db: Session = Depends(get_db),  skip: int = 0, limit: int = 10,):
+    result = await crud.read_kodeks(db=db,skip=skip,limit=limit)
     print(result)
     result = jsonable_encoder(result)
-    if result:
+    if result :
         return JSONResponse(content=result, status_code=status.HTTP_200_OK)
     else:
         return JSONResponse(content={"status":"some error"}, status_code=status.HTTP_204_NO_CONTENT)

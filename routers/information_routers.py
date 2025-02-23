@@ -29,8 +29,8 @@ async def create_kodeks(req: mod.DictinoryShemas, db: Session = Depends(get_db))
 
 
 @informations_routers.get('/api/get-information', )
-async def get_namalar(db: Session = Depends(get_db),):
-    result = await crud.read_information(db)
+async def get_namalar(db: Session = Depends(get_db), skip: int = 0, limit: int = 10):
+    result = await crud.read_information(db,skip=skip,limit=limit)
     print(result)
     result = jsonable_encoder(result)
     if result:

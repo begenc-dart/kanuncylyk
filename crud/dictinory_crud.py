@@ -52,7 +52,7 @@ async def delete_dictinary(id, db: Session):
     if new_delete:
         result = {"msg": "Удалено!"}
         return result
-async def read_dict(db: Session,search : str = None,):
+async def read_dict(db: Session,search : str = None,  skip: int = 0, limit: int = 10):
     print(search)
     query= db.query(mod.Dictinory)
     if search:
@@ -63,7 +63,7 @@ async def read_dict(db: Session,search : str = None,):
               
             )
         )
-    sozluk = query.all()
+    sozluk = query.offset(skip).limit(limit).all()
     if sozluk:
         return sozluk
     else:

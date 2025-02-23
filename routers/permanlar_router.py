@@ -62,25 +62,14 @@ async def update_operator(id: int, active: bool, db: Session = Depends(get_db)):
         return JSONResponse(content={"status": "some error"}, status_code=status.HTTP_204_NO_CONTENT)
 # get perman
 
-@permanlar_router.get('/api/get-permanlar',)
-async def get_permanlar( active: bool = None,  skip: int = 0, limit: int = 10, year: int = None, month: str = None, search: str = None, db: Session = Depends(get_db)):
+@permanlar_router.get('/api/get-permanlar/',)
+async def get_permanlar(namalar_id: int= None,  skip: int = 0, limit: int = 10,active: bool = None, year: int = None, month: str = None, search: str = None, db: Session = Depends(get_db)):
     if search:
         # Ensure the string is decoded in case it's not properly decoded
         search = search.encode('utf-8').decode('utf-8')
         print(search)
-    result = await crud.read_all_permanlar( skip=skip,limit=limit, db=db, active=active, year=year, month=month, search=search)
-    result = jsonable_encoder(result)
-    if result:
-        return JSONResponse(content=result, status_code=status.HTTP_200_OK)
-    else:
-        return JSONResponse(content=[], status_code=status.HTTP_200_OK)
-@permanlar_router.get('/api/get-permanlar/{id}',)
-async def get_permanlar(id: int,  skip: int = 0, limit: int = 10,active: bool = None, year: int = None, month: str = None, search: str = None, db: Session = Depends(get_db)):
-    if search:
-        # Ensure the string is decoded in case it's not properly decoded
-        search = search.encode('utf-8').decode('utf-8')
-        print(search)
-    result = await crud.read_permanlar(namalar_id=id,skip=skip,limit=limit, db=db, active=active, year=year, month=month, search=search)
+    # print(namalar_id)
+    result = await crud.read_permanlar(namalar_id=namalar_id,skip=skip,limit=limit, db=db, active=active, year=year, month=month, search=search)
     result = jsonable_encoder(result)
     if result:
         return JSONResponse(content=result, status_code=status.HTTP_200_OK)
